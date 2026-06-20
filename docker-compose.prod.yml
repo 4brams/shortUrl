@@ -25,6 +25,11 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      SECRET_KEY: ${SECRET_KEY}
     ports:
       - "3000"
 

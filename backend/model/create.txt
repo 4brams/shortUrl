@@ -1,0 +1,11 @@
+CREATE TABLE url (
+  id SERIAL PRIMARY KEY,
+  name text NOT NULL,
+  url text NOT NULL,
+  time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  expireTime TIMESTAMPTZ
+);
+
+INSERT INTO admins (account, password, access) VALUES ('abrams', 'abramspwd', 2);
+
+docker exec -it shorturl_db psql -U admin -d shorturl
