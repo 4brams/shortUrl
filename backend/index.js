@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const { Pool } = require("pg");
 
 const app = express();
+app.use(express.json());
 const port = 3000;
 
 const pool = new Pool({
@@ -28,10 +29,14 @@ app.post("/add", async (req, res) => {
 	const { name, url } = req.body;
 	const testExistence = await pool.query("SELECT * FROM url WHERE name = $1", [name]);
 	if (testExistence.rows.length != 0) {
+		res.status(403);
 		res.json({ result: "URL already exists" });
+		res.end();
 	} else {
 		await pool.query("INSERT INTO url (name, url, time) VALUES ($1, $2, NOW())", [name, url]);
+		res.status(200);
 		res.json({ result: "URL added successfully" });
+		res.end();
 	}
 });
 

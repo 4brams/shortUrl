@@ -1,6 +1,25 @@
+:root {
+	--sblack: #202020;
+	--swhite: #f9faf9;
+	--sgold: #ca9163;
+	--sblue: #99a2ac;
+}
+::-webkit-scrollbar {
+	display: none;
+}
 * {
 	margin: 0;
 	padding: 0;
 	border: 0;
 	text-decoration: none;
+	list-style: none;
+	font-family: sans-serif;
+}
+@font-face {
+	font-family: "D-DIN";
+	src: url("/fonts/D-DIN.otf") format("otf");
+}
+@font-face {
+	font-family: "D-DIN-Bold";
+	src: url("/fonts/D-DIN-Bold.otf") format("otf");
 }

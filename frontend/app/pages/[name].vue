@@ -8,13 +8,16 @@
 div {
 	width: 100vw;
 	height: 100vh;
-	background-color: #000;
+	background-color: var(--sblack);
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	position: fixed;
+	top: 0;
+	left: 0;
 }
 h1 {
-	color: #fff;
+	color: var(--swhite);
 	font-size: 4rem;
 }
 </style>
