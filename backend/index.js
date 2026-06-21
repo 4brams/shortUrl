@@ -5,6 +5,7 @@ const { Pool } = require("pg");
 const app = express();
 app.use(express.json());
 const port = 3000;
+const SECRET_KEY = process.env.SECRET_KEY;
 
 const pool = new Pool({
 	host: "db",
@@ -40,14 +41,86 @@ app.post("/add", async (req, res) => {
 	}
 });
 
-app.post("/delete", async (req, res) => {
-	const { id } = req.body;
-	const testExistence = await pool.query("SELECT * FROM url WHERE id = $1", [id]);
-	if (testExistence.rows.length != 0) {
-		await pool.query("DELETE FROM url WHERE id = $1", [id]);
-		res.json({ result: "URL deleted successfully" });
+app.post("/admin/auth/login", async (req, res) => {
+	const { account, password } = req.body;
+
+	const result = await pool.query("SELECT id FROM account WHERE account = $1 AND password = $2", [account, password]);
+
+	if (result.rowCount == 0) {
+		res.status(401);
+		res.json({ message: "Account or password is wrong." });
+		return;
 	} else {
-		res.json({ result: "URL not found" });
+		const token = jwt.sign({ id: result.rows[0].id }, SECRET_KEY, { expiresIn: "1h" });
+		res.status(200);
+		res.json({ message: "Succeed.", token });
+		console.log("token:", token);
+	}
+});
+
+app.post("/admin/auth/verify", async (req, res) => {
+	const authHeader = req.headers.authorization;
+	if (!authHeader) {
+		res.status(400);
+		res.json({ message: "Token not found." });
+		return;
+	}
+
+	const token = authHeader.split(" ")[1];
+
+	try {
+		const tokenDecoded = jwt.verify(token, SECRET_KEY);
+		const result = await pool.query("SELECT * FROM account WHERE id = $1", [tokenDecoded.id]);
+		res.status(200).json({
+			message: "Token is ok.",
+			account: result.rows[0].account,
+		});
+	} catch (err) {
+		console.log("Verify Error:", err);
+		res.status(401).json({ message: "Token is invalid." });
+	}
+});
+
+app.get("/admin/all", async (req, res) => {
+	const authHeader = req.headers.authorization;
+	if (!authHeader) {
+		res.status(400);
+		res.json({ message: "Token not found." });
+		return;
+	}
+
+	const token = authHeader.split(" ")[1];
+
+	try {
+		const tokenDecoded = jwt.verify(token, SECRET_KEY);
+		const result = await pool.query("SELECT * FROM url");
+		res.status(200).json({
+			data: result.rows,
+		});
+	} catch (err) {
+		console.log("Verify Error:", err);
+		res.status(401).json({ message: "Token is invalid." });
+	}
+});
+
+app.post("/admin/delete", async (req, res) => {
+	const authHeader = req.headers.authorization;
+	if (!authHeader) {
+		res.status(400);
+		res.json({ message: "Token not found." });
+		return;
+	}
+
+	const token = authHeader.split(" ")[1];
+
+	try {
+		const tokenDecoded = jwt.verify(token, SECRET_KEY);
+		const { id } = req.body;
+		await pool.query("DELETE FROM url WHERE id = $1", [id]);
+		res.status(200).json({ result: "URL deleted successfully" });
+	} catch (err) {
+		console.log("Verify Error:", err);
+		res.status(401).json({ message: "Token is invalid." });
 	}
 });
 

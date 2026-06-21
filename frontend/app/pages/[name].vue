@@ -44,13 +44,3 @@ const getUrl = async () => {
 
 getUrl();
 </script>
-
-<!-- <script setup>
-const route = useRoute();
-const name = route.params.name;
-console.log("name:", name);
-const response = await fetch(`/api/${name}`, { method: "GET" });
-//const data = await response.json();
-//window.location.href = data.url;
-//console.log("data:", data);
-</script> -->

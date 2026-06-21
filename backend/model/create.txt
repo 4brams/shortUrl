@@ -5,7 +5,15 @@ CREATE TABLE url (
   time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   expireTime TIMESTAMPTZ
 );
+CREATE TABLE account (
+  id SERIAL PRIMARY KEY,
+  account text NOT NULL,
+  password text NOT NULL,
+  time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+);
 
 INSERT INTO admins (account, password, access) VALUES ('abrams', 'abramspwd', 2);
+INSERT INTO url (name, url, time) VALUES ('test', 'www.google.com', NOW());
+INSERT INTO account (account, password, time) VALUES ('abrams', 'abramspwd', NOW());
 
 docker exec -it shorturl_db psql -U admin -d shorturl
