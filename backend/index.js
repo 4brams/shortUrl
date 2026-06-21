@@ -8,22 +8,11 @@ const port = 3000;
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const pool = new Pool({
-	host: "db",
+	host: process.env.DB_HOST,
 	user: process.env.DB_USER,
 	password: process.env.DB_PASSWORD,
 	database: process.env.DB_NAME,
 	port: 5432,
-});
-
-app.get("/:name", async (req, res) => {
-	const name = String(req.params.name);
-	const result = await pool.query("SELECT * FROM url WHERE name = $1", [name]);
-	console.log(result.rows);
-	if (result.rows.length === 0) {
-		res.json({ url: "/" });
-	} else {
-		res.json({ url: result.rows[0].url });
-	}
 });
 
 app.post("/add", async (req, res) => {
@@ -121,6 +110,17 @@ app.post("/admin/delete", async (req, res) => {
 	} catch (err) {
 		console.log("Verify Error:", err);
 		res.status(401).json({ message: "Token is invalid." });
+	}
+});
+
+app.get("/:name", async (req, res) => {
+	const name = String(req.params.name);
+	const result = await pool.query("SELECT * FROM url WHERE name = $1", [name]);
+	console.log(result.rows);
+	if (result.rows.length === 0) {
+		res.json({ url: "/" });
+	} else {
+		res.json({ url: result.rows[0].url });
 	}
 });
 
